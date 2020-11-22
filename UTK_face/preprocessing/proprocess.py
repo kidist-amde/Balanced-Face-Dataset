@@ -69,6 +69,9 @@ def save_split(save_folder, image_paths, index2class):
         output_path = os.path.join(output_folder, filename)
         shutil.copy(image_path, output_path)
 def main(args):
+
+    if not os.path.exists(args.output_path):
+        os.makedirs(args.output_path)
     image_paths = get_image_paths(args.path)
     
     trainset, test_valid_set = train_test_split(image_paths, test_size = 0.4)
@@ -85,8 +88,6 @@ def main(args):
     save_split(train_path, trainset, index2class)
     save_split(test_path, testset, index2class)
     save_split(valid_path, validset, index2class)
-    
-    
     
     
     
