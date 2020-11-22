@@ -10,12 +10,14 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import tensorflow as tf
-import keras
+
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras import  Model
 from keras_vggface.vggface import VGGFace
 from keras_vggface.utils import preprocess_input
 from PIL import Image
+import argparse
+
 layers = tf.keras.layers
 IMG_SIZE = (224, 224)
 def get_model():
@@ -89,6 +91,7 @@ def get_data_gens(args):
 
 def main(args):
     model = get_model()
+    model.summary()
     data_gens = get_data_gens(args)
     model.compile(loss="categorical_crossentropy", optimizer=tf.keras.optimzers.Adam(lr=args.lr))
     checkpoint_filepath = os.path.join(args.exp_dir, 'checkpoint.h5')
