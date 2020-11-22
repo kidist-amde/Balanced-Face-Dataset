@@ -77,7 +77,7 @@ def main(args):
     print("Splitting the dataset")
     trainset, test_valid_set = train_test_split(image_paths, test_size = 0.4)
     
-    testset, valid_set = train_test_split(test_valid_set, test_size = 0.5)
+    testset, validset = train_test_split(test_valid_set, test_size = 0.5)
     
     index2class = ["White", "Black", "Asian", "Indian", "Others"]
     class2index = {index2class[i]:i for i in range(len(index2class))}
