@@ -91,9 +91,9 @@ def get_data_gens(args):
 
 def main(args):
     model = get_model()
-    model.summary()
+    print(model.summary())
     data_gens = get_data_gens(args)
-    model.compile(loss="categorical_crossentropy", optimizer=tf.keras.optimzers.Adam(lr=args.lr))
+    model.compile(loss="categorical_crossentropy", optimizer=tf.keras.optimizers.Adam(lr=args.lr))
     checkpoint_filepath = os.path.join(args.exp_dir, 'checkpoint.h5')
     model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
         filepath=checkpoint_filepath,
