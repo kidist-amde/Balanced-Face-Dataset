@@ -62,9 +62,10 @@ def crop_face(detector, image_path):
     Face image if dlib ables to find a face or the original image otherwise
 
   """
-  image = Image.open(image_path)
-  image = np.array(image)
+  
   try:
+    image = Image.open(image_path)
+    image = np.array(image)
     face_rectangles = detector(image)
   except:
     print("Error: when detecting face from: {}".format(image_path))
