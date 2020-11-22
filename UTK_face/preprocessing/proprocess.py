@@ -71,8 +71,10 @@ def main(args):
 
     if not os.path.exists(args.output_path):
         os.makedirs(args.output_path)
+    print("Loading image paths")
     image_paths = get_image_paths(args.path)
     
+    print("Splitting the dataset")
     trainset, test_valid_set = train_test_split(image_paths, test_size = 0.4)
     
     testset, valid_set = train_test_split(test_valid_set, test_size = 0.5)
@@ -84,8 +86,11 @@ def main(args):
     test_path = os.path.join(args.output, "test")
     valid_path = os.path.join(args.output, "valid")
     
+    print("Saving training set")
     save_split(train_path, trainset, index2class)
+    print("Saving test set")
     save_split(test_path, testset, index2class)
+    print("Saving valid set")
     save_split(valid_path, validset, index2class)
     
     
