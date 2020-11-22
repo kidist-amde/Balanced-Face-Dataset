@@ -82,10 +82,12 @@ def main(args):
     index2class = ["White", "Black", "Asian", "Indian", "Others"]
     class2index = {index2class[i]:i for i in range(len(index2class))}
 
-    train_path = os.path.join(args.output, "train")
-    test_path = os.path.join(args.output, "test")
-    valid_path = os.path.join(args.output, "valid")
-    
+    train_path = os.path.join(args.output_path, "train")
+    test_path = os.path.join(args.output_path, "test")
+    valid_path = os.path.join(args.output_path, "valid")
+    for p in [train_path, test_path, valid_path]:
+        if not os.path.exists(p):
+            os.mkdir(p)
     print("Saving training set")
     save_split(train_path, trainset, index2class)
     print("Saving test set")
