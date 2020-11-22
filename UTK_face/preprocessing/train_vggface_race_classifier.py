@@ -17,7 +17,7 @@ from keras_vggface.vggface import VGGFace
 from keras_vggface.utils import preprocess_input
 from PIL import Image
 import argparse
-
+import os
 layers = tf.keras.layers
 IMG_SIZE = (224, 224)
 def get_model():
