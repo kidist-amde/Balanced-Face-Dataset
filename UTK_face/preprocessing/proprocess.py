@@ -38,12 +38,11 @@ def get_image_paths(path):
 
   """
   image_paths = []
-
   for fold in os.listdir(path):
     for image_file in os.listdir(os.path.join(path, fold)):
       if image_file.lower().endswith(".jpg"):
-        path = os.path.join(path, fold, image_file)
-        image_paths.append(path)
+        image_path = os.path.join(path, fold, image_file)
+        image_paths.append(image_path)
 
   return image_paths
 
