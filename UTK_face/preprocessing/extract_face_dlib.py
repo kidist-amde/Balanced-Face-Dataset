@@ -93,10 +93,6 @@ def crop_face(detector, image_path):
     return image
   return face_image
 
-image_path = os.path.join(train_black_path, files[444])
-face_array =  crop_face(detector, image_path)
-face_image = PIL.Image.fromarray(face_array)
-face_image
 
 def crop_faces_folder(detector, source_folder, dest_folder, size):
   """
@@ -129,6 +125,7 @@ def crop_faces_folder(detector, source_folder, dest_folder, size):
 
 def crop_and_save_faces(detector, source_base_folder, dest_base_folder, size):
   for case in ["train", "valid", "test"]:
+    print("Processing {} files".formt(case))
     for class_ in os.listdir(os.path.join(source_base_folder, case)):
       source_folder = os.path.join(source_base_folder, case, class_)
       dest_folder = os.path.join(dest_base_folder, case, class_)
