@@ -11,6 +11,7 @@ import os
 import numpy as np
 import pandas as pd
 import PIL
+from PIL import Image
 import argparse
 
 def get_args():
@@ -61,7 +62,7 @@ def crop_face(detector, image_path):
     Face image if dlib ables to find a face or the original image otherwise
 
   """
-  image = PIL.Image.open(image_path)
+  image = Image.open(image_path)
   image = np.array(image)
   try:
     face_rectangles = detector(image)
@@ -112,7 +113,7 @@ def crop_faces_folder(detector, source_folder, dest_folder, size):
     face_array = crop_face(detector, image_path)
     if face_array is None:
       continue
-    face_image = PIL.Image.fromarray(face_array)
+    face_image = Image.fromarray(face_array)
     face_image = face_image.resize(size)
 
     if face_array.shape[-1]==4:
@@ -125,7 +126,7 @@ def crop_faces_folder(detector, source_folder, dest_folder, size):
 
 def crop_and_save_faces(detector, source_base_folder, dest_base_folder, size):
   for case in ["train", "valid", "test"]:
-    print("Processing {} files".formt(case))
+    print("Processing {} files".format(case))
     for class_ in os.listdir(os.path.join(source_base_folder, case)):
       source_folder = os.path.join(source_base_folder, case, class_)
       dest_folder = os.path.join(dest_base_folder, case, class_)
