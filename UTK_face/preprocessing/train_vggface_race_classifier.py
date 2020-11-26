@@ -18,6 +18,9 @@ from keras_vggface.utils import preprocess_input
 from PIL import Image
 import argparse
 import os
+
+
+
 layers = tf.keras.layers
 IMG_SIZE = (224, 224)
 def get_model():
@@ -35,7 +38,7 @@ def get_model():
   out = layers.Dense(nb_class, activation='softmax', name='classifier')(x)
   custom_vgg_model = Model(inputs=vgg_features.input, outputs=out)
   for layer in vgg_features.layers:
-      layer.trainable = True
+      layer.trainable = False
   return custom_vgg_model
 
 def get_args():
@@ -43,9 +46,9 @@ def get_args():
     parser.add_argument("-p", "--path", required=True,
                         help="Path to split UTK-Face dataset after preprocessing with dlib. \nIt should contain folders `train`, `test` and `valid`")
     parser.add_argument("-d", "--exp_dir", default="exp", help="Experiment folder, to save checkpoints!")
-    parser.add_argument("-b", "--batch_size", default=64, help="Batch size used during training")
-    parser.add_argument("-e", "--epochs", default=100, help="Number of epochs to train the model")
-    parser.add_argument("-l", "--lr", default=1e-4, help="Learning rate")
+    parser.add_argument("-b", "--batch_size", default=64, help="Batch size used during training", type=int)
+    parser.add_argument("-e", "--epochs", default=100, help="Number of epochs to train the model", type=int)
+    parser.add_argument("-l", "--lr", default=1e-4, help="Learning rate", type=float)
     args = parser.parse_args()
     return args
 
@@ -93,7 +96,7 @@ def main(args):
     model = get_model()
     print(model.summary())
     data_gens = get_data_gens(args)
-    model.compile(loss="categorical_crossentropy", optimizer=tf.keras.optimizers.Adam(lr=args.lr))
+    model.compile(loss="categorical_crossentropy", optimizer=tf.keras.optimizers.Adam(lr=args.lr), metrics="accuracy")
     checkpoint_filepath = os.path.join(args.exp_dir, 'checkpoint.h5')
     model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
         filepath=checkpoint_filepath,
@@ -102,8 +105,8 @@ def main(args):
         mode='auto',
         save_best_only=True)
     
-    model.fit_generator(data_gens["train"], validation_data = data_gens["valid"], epochs=args.epochs, callbacks=[model_checkpoint_callback])
-    model.evalute(data_gens["test"])
+    model.fit(data_gens["train"], validation_data = data_gens["valid"], epochs=args.epochs, callbacks=[model_checkpoint_callback])
+    print(model.evalute(data_gens["test"]))
 if __name__ == '__main__':
     args = get_args()
     
