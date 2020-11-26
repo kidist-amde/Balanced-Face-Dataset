@@ -48,6 +48,7 @@ def get_args():
     parser.add_argument("-d", "--exp_dir", default="exp", help="Experiment folder, to save checkpoints!")
     parser.add_argument("-b", "--batch_size", default=64, help="Batch size used during training", type=int)
     parser.add_argument("-e", "--epochs", default=100, help="Number of epochs to train the model", type=int)
+    parser.add_argument('--multi-gpu', dest='multi_gpu', action='store_true', default=False)
     parser.add_argument("-l", "--lr", default=1e-4, help="Learning rate", type=float)
     args = parser.parse_args()
     return args
@@ -95,7 +96,12 @@ def get_data_gens(args):
 def main(args):
     if not os.path.exists(args.exp):
           os.mkdir(args.exp)
-    model = get_model()
+    if args.multi_gpu:
+      strategy = tf.distribute.MirroredStrategy()
+      with strategy.scope()
+        model = get_model()
+    else:
+      model = get_model()
     print(model.summary())
     data_gens = get_data_gens(args)
     model.compile(loss="categorical_crossentropy", optimizer=tf.keras.optimizers.Adam(lr=args.lr), metrics="accuracy")
@@ -103,14 +109,14 @@ def main(args):
     model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
         filepath=checkpoint_filepath,
         save_weights_only=True,
-        monitor='val_loss',
+        monitor='val_accuracy',
         mode='auto',
         save_best_only=True)
     
     model.fit(data_gens["train"], validation_data = data_gens["valid"], epochs=args.epochs, callbacks=[model_checkpoint_callback])
     
     model.save_weights(os.path.join(args.exp, "final-weights.h5"))
-    print(model.evalute(data_gens["test"]))
+    print(model.evaluate(data_gens["test"]))
 if __name__ == '__main__':
     args = get_args()
     
