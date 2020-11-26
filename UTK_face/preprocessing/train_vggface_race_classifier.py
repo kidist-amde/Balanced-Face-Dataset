@@ -94,11 +94,11 @@ def get_data_gens(args):
     return {"train":train_image_gen, "valid":validation_image_gen, "test":test_image_gen}
 
 def main(args):
-    if not os.path.exists(args.exp):
-          os.mkdir(args.exp)
+    if not os.path.exists(args.exp_dir):
+          os.mkdir(args.exp_dir)
     if args.multi_gpu:
       strategy = tf.distribute.MirroredStrategy()
-      with strategy.scope()
+      with strategy.scope():
         model = get_model()
     else:
       model = get_model()
@@ -111,11 +111,12 @@ def main(args):
         save_weights_only=True,
         monitor='val_accuracy',
         mode='auto',
+        period=1,
         save_best_only=True)
     
     model.fit(data_gens["train"], validation_data = data_gens["valid"], epochs=args.epochs, callbacks=[model_checkpoint_callback])
     
-    model.save_weights(os.path.join(args.exp, "final-weights.h5"))
+    model.save_weights(os.path.join(args.exp_dir, "final-weights.h5"))
     print(model.evaluate(data_gens["test"]))
 if __name__ == '__main__':
     args = get_args()
