@@ -93,6 +93,8 @@ def get_data_gens(args):
     return {"train":train_image_gen, "valid":validation_image_gen, "test":test_image_gen}
 
 def main(args):
+    if not os.path.exists(args.exp):
+          os.mkdir(args.exp)
     model = get_model()
     print(model.summary())
     data_gens = get_data_gens(args)
@@ -106,6 +108,8 @@ def main(args):
         save_best_only=True)
     
     model.fit(data_gens["train"], validation_data = data_gens["valid"], epochs=args.epochs, callbacks=[model_checkpoint_callback])
+    
+    model.save_weights(os.path.join(args.exp, "final-weights.h5"))
     print(model.evalute(data_gens["test"]))
 if __name__ == '__main__':
     args = get_args()
