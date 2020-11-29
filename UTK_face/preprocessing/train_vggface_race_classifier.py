@@ -18,7 +18,7 @@ from keras_vggface.utils import preprocess_input
 from PIL import Image
 import argparse
 import os
-
+layers = tf.keras.layers
 
 
 class CustomCheckPointCallback(tf.keras.callbacks.Callback):
