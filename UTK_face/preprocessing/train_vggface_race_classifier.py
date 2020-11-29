@@ -140,7 +140,9 @@ def main(args):
       mode='max',
       save_best_only=True)
     csv_logger = tf.keras.callbacks.CSVLogger(os.path.join(args.exp_dir, 'training.log'))
-
+    if os.path.exists(checkpoint_filepath):
+          print("Loading pretrained model")
+          model.load_weights(checkpoint_filepath)
     model.fit(data_gens["train"], validation_data = data_gens["valid"], epochs=args.epochs, callbacks=[model_checkpoint_callback, csv_logger], workers=8)
     
     model.save_weights(os.path.join(args.exp_dir, "final-weights.h5"))
