@@ -21,7 +21,33 @@ import os
 
 
 
-layers = tf.keras.layers
+class CustomCheckPointCallback(tf.keras.callbacks.Callback):
+      def __init__(self, path, mode="accuracy", verbose = 0):
+          assert mode in ["accuracy", "loss"]
+          self.path = path
+          self.mode = mode
+          self.verbose = verbose
+          if mode == "accuracy":
+                self.best_accuracy = 0.0
+          else:
+                self.best_loss = float('inf')
+      def on_train_end(self, logs={}):
+          if self.mode == "accuracy":
+                if logs["val_accuracy"] > self.best_accuracy:
+                      if self.verbose != 0:
+                            print("Accuracy impoved from: {:.4f} to {:.4f}".format(self.best_accuracy, logs["val_accuracy"]))
+                      self.best_accuracy = logs["val_accuracy"]
+                      self.model.save(self.path)
+                            
+                else:
+                      return
+          else:
+                if logs["val_loss"] < self.best_loss:
+                      if self.verbose != 0:
+                            print("Loss decreased from: {:.4f} to {:.4f}".format(self.best_loss, logs["val_loss"]))
+                      self.best_loss = logs["val_loss"]
+                      self.model.save(self.path)
+                return;
 IMG_SIZE = (224, 224)
 def get_model():
   # Convolution Features
@@ -106,13 +132,7 @@ def main(args):
     data_gens = get_data_gens(args)
     model.compile(loss="categorical_crossentropy", optimizer=tf.keras.optimizers.Adam(lr=args.lr), metrics="accuracy")
     checkpoint_filepath = os.path.join(args.exp_dir, 'checkpoint.h5')
-    model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
-        filepath=checkpoint_filepath,
-        save_weights_only=True,
-        monitor='val_accuracy',
-        mode='auto',
-        period=1,
-        save_best_only=True)
+    model_checkpoint_callback = CustomCheckPointCallback(checkpoint_filepath)
     
     model.fit(data_gens["train"], validation_data = data_gens["valid"], epochs=args.epochs, callbacks=[model_checkpoint_callback])
     
