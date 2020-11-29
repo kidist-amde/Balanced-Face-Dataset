@@ -31,7 +31,7 @@ class CustomCheckPointCallback(tf.keras.callbacks.Callback):
                 self.best_accuracy = 0.0
           else:
                 self.best_loss = float('inf')
-      def on_train_end(self, logs={}):
+      def on_epoch_end(self, logs={}):
           if self.mode == "accuracy":
                 if logs["val_accuracy"] > self.best_accuracy:
                       if self.verbose != 0:
@@ -132,8 +132,14 @@ def main(args):
     data_gens = get_data_gens(args)
     model.compile(loss="categorical_crossentropy", optimizer=tf.keras.optimizers.Adam(lr=args.lr), metrics="accuracy")
     checkpoint_filepath = os.path.join(args.exp_dir, 'checkpoint.h5')
-    model_checkpoint_callback = CustomCheckPointCallback(checkpoint_filepath)
-    
+    # model_checkpoint_callback = CustomCheckPointCallback(checkpoint_filepath)
+    model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
+      filepath=checkpoint_filepath,
+      save_weights_only=True,
+      monitor='val_acc',
+      mode='max',
+      save_best_only=True)
+
     model.fit(data_gens["train"], validation_data = data_gens["valid"], epochs=args.epochs, callbacks=[model_checkpoint_callback])
     
     model.save_weights(os.path.join(args.exp_dir, "final-weights.h5"))
