@@ -139,7 +139,7 @@ def main(args):
       monitor='val_accuracy',
       mode='max',
       save_best_only=True)
-    csv_logger = tf.keras.callbacks.CSVLogger('training.log')
+    csv_logger = tf.keras.callbacks.CSVLogger(os.path.join(args.exp_dir, 'training.log'))
 
     model.fit(data_gens["train"], validation_data = data_gens["valid"], epochs=args.epochs, callbacks=[model_checkpoint_callback, csv_logger], workers=8)
     
