@@ -69,7 +69,7 @@ def get_args():
     parser.add_argument("-e", "--exp_dir", required=True,
                         help="Path to race classifier model. It should contain checkpoint.h5 file")
     parser.add_argument("-o", "--output_path", required=True, help="Path to save Generated face dataset!")
-    parser.add_argument("-n", "--num_images", default=100_000, help="Number of images to generate")
+    parser.add_argument("-n", "--num_images", default=100_000, help="Number of images to generate", type=int)
     args = parser.parse_args()
     return args
 
