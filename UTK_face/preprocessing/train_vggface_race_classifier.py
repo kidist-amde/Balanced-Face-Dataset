@@ -140,7 +140,7 @@ def main(args):
       mode='max',
       save_best_only=True)
 
-    model.fit(data_gens["train"], validation_data = data_gens["valid"], epochs=args.epochs, callbacks=[model_checkpoint_callback])
+    model.fit(data_gens["train"], validation_data = data_gens["valid"], epochs=args.epochs, callbacks=[model_checkpoint_callback], workers=8)
     
     model.save_weights(os.path.join(args.exp_dir, "final-weights.h5"))
     print(model.evaluate(data_gens["test"]))
