@@ -136,11 +136,12 @@ def main(args):
     model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
       filepath=checkpoint_filepath,
       save_weights_only=True,
-      monitor='val_acc',
+      monitor='val_accuracy',
       mode='max',
       save_best_only=True)
+    csv_logger = tf.keras.callbacks.CSVLogger('training.log')
 
-    model.fit(data_gens["train"], validation_data = data_gens["valid"], epochs=args.epochs, callbacks=[model_checkpoint_callback], workers=8)
+    model.fit(data_gens["train"], validation_data = data_gens["valid"], epochs=args.epochs, callbacks=[model_checkpoint_callback, csv_logger], workers=8)
     
     model.save_weights(os.path.join(args.exp_dir, "final-weights.h5"))
     print(model.evaluate(data_gens["test"]))
