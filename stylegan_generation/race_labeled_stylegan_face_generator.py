@@ -490,64 +490,51 @@ def generate_images(model, current_race_index, num_images = 10, threshold=0.7):
 
 
 
-def save_images(args, images, labels,  current_image_index):
+def save_images(args, images, latents,  label, iteration):
+    
   output_folder = os.path.join(args.output_folder, "images")
   if not os.path.exists(output_folder):
       os.mkdir(output_folder)
+
+  label_folder = os.path.join(output_folder, label)
+  if not os.path.exists(label_folder):
+      os.mkdir(label_folder)
+  iteration_folder = os.path.join(label_folder,  str(iteration))
+  if not os.path.exists(iteration_folder):
+      os.mkdir(iteration_folder)
+  images_folder = os.path.join(iteration_folder, "images")
   image_filenames = []
+  image_latents = []
   for i in range(len(images)):
-    if not os.path.exists(os.path.join(output_folder, labels[i])):
-        os.mkdir(os.path.join(output_folder, labels[i]))
+    
     image = images[i]
     image = PIL.Image.fromarray(image)
-    output_path = os.path.join(output_folder, labels[i], "image-{}.png".format(current_image_index))
+    output_path = os.path.join(images_folder, "image-{}.png".format(current_image_index))
     image_filenames.append(output_path)
     image.save(output_path)
     current_image_index += 1
-  return image_filenames, current_image_index
+  output_df = pd.DataFrame(data = latents)
+  output_df["filename"] = image_filenames
+  output_df.to_csv(os.path.join(iteration_folder, "latents.csv"), index = False)
+  return 
 
 
 
 def generate_labeled_images(args, model, class_to_index):
     if not os.path.exists(args.output_folder):
         os.mkdir(args.output_folder)
-    csv_path = os.path.join(args.output_folder, 'Generated_Images_Info.csv')
-    if os.path.exists(csv_path):
-        latent_df = pd.read_csv(csv_path)
-    else:
-        latent_df = None
-
-
 
     images_per_iter = 100
-
-    current_image_index = 0
-
     for i in range(args.num_images//images_per_iter):
-        if latent_df is not None:
-            current_image_index = len(latent_df)
         
         for class_, class_index  in class_to_index.items():
             if class_ == "Others":
                 continue
             images, latents_inputs = generate_images(model, class_index, num_images = images_per_iter)
             print("Generated: {}  {} face images".format(len(images), class_))
-            image_labels = [class_ for i in range(len(images))]
-            file_paths, current_image_index =  save_images(args, images,image_labels,  current_image_index)
-            
-            latents_inputs = np.concatenate(latents_inputs, axis=0)
-            filename_df = pd.DataFrame(dict(filename = file_paths, labels=image_labels))
-            lat_df  = pd.DataFrame(data = latents_inputs)
-            whole_df = pd.concat([filename_df, lat_df], axis=1)
-            
-            if latent_df is None:
-                latent_df = whole_df
-            else:
-                whole_df.columns = latent_df.columns
-                latent_df = latent_df.append(whole_df)
-            latent_df.to_csv(csv_path, index=False)
 
-    return latent_df
+            save_images(args, images, latents_inputs, class_, i)
+            
 
 def main(args):
     weights_path = os.path.join(args.exp_dir, "checkpoint.h5")
