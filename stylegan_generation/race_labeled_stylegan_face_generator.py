@@ -496,6 +496,8 @@ def save_images(args, images, labels,  current_image_index):
       os.mkdir(output_folder)
   image_filenames = []
   for i in range(len(images)):
+    if not os.path.exists(os.path.join(output_folder, labels[i])):
+        os.mkdir(os.path.join(output_folder, labels[i]))
     image = images[i]
     image = PIL.Image.fromarray(image)
     output_path = os.path.join(output_folder, labels[i], "image-{}.png".format(current_image_index))
@@ -507,6 +509,8 @@ def save_images(args, images, labels,  current_image_index):
 
 
 def generate_labeled_images(args, model, class_to_index):
+    if not os.path.exists(args.output_folder):
+        os.mkdir(args.output_folder)
     csv_path = os.path.join(args.output_folder, 'Generated_Images_Info.csv')
     if os.path.exists(csv_path):
         latent_df = pd.read_csv(csv_path)
