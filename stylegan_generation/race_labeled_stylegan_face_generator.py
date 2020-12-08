@@ -527,6 +527,7 @@ def generate_labeled_images(args, model, class_to_index):
             if class_ == "Others":
                 continue
             images, latents_inputs = generate_images(model, class_index, num_images = images_per_iter)
+            print("Generated: {}  {} face images".format(len(images), class_))
             image_labels = [class_ for i in range(len(images))]
             file_paths, current_image_index =  save_images(args, images,image_labels,  current_image_index)
             
