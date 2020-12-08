@@ -70,6 +70,8 @@ def get_args():
                         help="Path to race classifier model. It should contain checkpoint.h5 file")
     parser.add_argument("-o", "--output_folder", required=True, help="Path to save Generated face dataset!")
     parser.add_argument("-n", "--num_images", default=100_000, help="Number of images to generate", type=int)
+    parser.add_argument("-w", "--weights_dir", required=True, help="Path to weights of logestic classifiers")
+
     args = parser.parse_args()
     return args
 
@@ -459,13 +461,13 @@ inidces_to_class = {0: 'Asian', 1: 'Black', 2: 'Indian', 3: 'Others', 4: 'White'
 class_to_index = {value:key for key, value in inidces_to_class.items()}
 
 
-def generate_images(model, current_race_index, num_images = 10, threshold=0.7):
+def generate_images(model, current_race_index, direction_weights, num_images = 10, threshold=0.7):
   
   images = []
   latent_inputs =[]
   while len(images) < num_images:
     latents = rnd.randn(1, Gs.input_shape[1])
-
+    latents+=direction_weights[inidces_to_class[current_race_index]].reshape(-1, 512)
 
 
     
@@ -522,7 +524,7 @@ def save_images(args, images, latents,  label, iteration):
 
 
 
-def generate_labeled_images(args, model, class_to_index):
+def generate_labeled_images(args, model, class_to_index, direction_weights):
     if not os.path.exists(args.output_folder):
         os.mkdir(args.output_folder)
 
@@ -532,17 +534,24 @@ def generate_labeled_images(args, model, class_to_index):
         for class_, class_index  in class_to_index.items():
             if class_ == "Others":
                 continue
-            images, latents_inputs = generate_images(model, class_index, num_images = images_per_iter)
+            images, latents_inputs = generate_images(model, class_index, direction_weights, num_images = images_per_iter)
             print("Generated: {}  {} face images".format(len(images), class_))
 
             save_images(args, images, latents_inputs, class_, i)
             
 
 def main(args):
+
+    direction_weights = {}
+
+    for race in ['Asian', 'Black', 'Indian', 'White']:
+        weights = np.load("{}/{}-race-direction-weights.npy".format(args.weights_dir, race))
+        direction_weights[race] = weights
+  
     weights_path = os.path.join(args.exp_dir, "checkpoint.h5")
     
     model = get_model(weights_path)
-    generate_labeled_images(args, model, class_to_index)
+    generate_labeled_images(args, model, class_to_index, direction_weights)
     
 if __name__ == '__main__':
     args = get_args()
