@@ -504,7 +504,7 @@ def save_images(args, images, latents,  label, iteration):
       os.mkdir(iteration_folder)
   images_folder = os.path.join(iteration_folder, "images")
   image_filenames = []
-  image_latents = []
+  current_image_index = 0
   for i in range(len(images)):
     
     image = images[i]
