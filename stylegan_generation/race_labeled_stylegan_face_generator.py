@@ -492,7 +492,7 @@ def generate_images(model, current_race_index, num_images = 10, threshold=0.7):
 
 def save_images(args, images, latents,  label, iteration):
     
-  output_folder = os.path.join(args.output_folder, "images")
+  output_folder = os.path.join(args.output_folder)
   if not os.path.exists(output_folder):
       os.mkdir(output_folder)
 
@@ -503,6 +503,8 @@ def save_images(args, images, latents,  label, iteration):
   if not os.path.exists(iteration_folder):
       os.mkdir(iteration_folder)
   images_folder = os.path.join(iteration_folder, "images")
+  if not os.path.exists(images_folder):
+      os.mkdir(images_folder)
   image_filenames = []
   current_image_index = 0
   for i in range(len(images)):
