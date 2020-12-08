@@ -467,7 +467,8 @@ def generate_images(model, current_race_index, direction_weights, num_images = 1
   latent_inputs =[]
   while len(images) < num_images:
     latents = rnd.randn(1, Gs.input_shape[1])
-    latents+=direction_weights[inidces_to_class[current_race_index]].reshape(-1, 512)
+    if current_race_index != class_to_index["Indian"]: # For Indian it is not working
+        latents+=direction_weights[inidces_to_class[current_race_index]].reshape(-1, 512)
 
 
     
@@ -492,7 +493,7 @@ def generate_images(model, current_race_index, direction_weights, num_images = 1
 
 
 
-def save_images(args, images, latents,  label, iteration):
+def save_images(args, images, latents,  label):
     
   output_folder = os.path.join(args.output_folder)
   if not os.path.exists(output_folder):
@@ -501,7 +502,11 @@ def save_images(args, images, latents,  label, iteration):
   label_folder = os.path.join(output_folder, label)
   if not os.path.exists(label_folder):
       os.mkdir(label_folder)
+  iteration = 0
   iteration_folder = os.path.join(label_folder,  str(iteration))
+  while os.path.exists(iteration_folder):
+      iteration += 1
+      iteration_folder = os.path.join(label_folder,  str(iteration))
   if not os.path.exists(iteration_folder):
       os.mkdir(iteration_folder)
   images_folder = os.path.join(iteration_folder, "images")
@@ -537,7 +542,7 @@ def generate_labeled_images(args, model, class_to_index, direction_weights):
             images, latents_inputs = generate_images(model, class_index, direction_weights, num_images = images_per_iter)
             print("Generated: {}  {} face images".format(len(images), class_))
 
-            save_images(args, images, latents_inputs, class_, i)
+            save_images(args, images, latents_inputs, class_)
             
 
 def main(args):
