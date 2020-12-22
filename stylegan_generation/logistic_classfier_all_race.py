@@ -35,15 +35,15 @@ def load_dataset(args, race):
     
     for p in os.listdir(race_path):
           if os.path.exists(os.path.join(race_path, p, "latents.csv")):
-            positive_paths.append(os.path.join(race_path, p))
+              positive_paths.append(os.path.join(race_path, p))
     other_races = set(os.listdir(path))
     other_races.remove(race)
 
     negative_paths = []
     for r in other_races:
-        for p in os.path.join(path, r):
+        for p in os.listdir(os.path.join(path, r)):
               if os.path.exists(os.path.join(path, r, p, "latents.csv")):
-                negative_paths.append(os.path.join(path, r, p))
+                  negative_paths.append(os.path.join(path, r, p))
     negative_paths = np.random.choice(negative_paths, len(positive_paths)).tolist()
     all_paths = positive_paths + negative_paths
     latent_inputs = []
