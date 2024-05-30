@@ -6,10 +6,12 @@ For a machine learning model to generalize effectively to unseen data within a p
 
 # Citation
 If you find this repo useful, please consider citing our work:
-`
+```
+
 @article{mekonnen2023balanced,
   title={Balanced Face Dataset: Guiding StyleGAN to Generate Labeled Synthetic Face Image Dataset for Underrepresented Group},
   author={Mekonnen, Kidist Amde},
   journal={arXiv preprint arXiv:2308.03495},
   year={2023}
-}`
+
+}```
